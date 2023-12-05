@@ -20,7 +20,7 @@ public class CouponService {
 
     @Transactional
     public Long couponMaxCount(Long couponId){
-        return couponRepository.findById(1L).get().getMaxCount();
+        return couponRepository.findById(couponId).get().getMaxCount();
     }
 
 }

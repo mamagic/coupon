@@ -1,6 +1,9 @@
 package com.project.coupon;
 
 
+import com.project.coupon.dto.CouponIssuanceDTO;
+import com.project.coupon.entity.CouponIssuance;
+import com.project.coupon.service.CouponIssuanceService;
 import com.project.coupon.service.CouponService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +20,12 @@ public class TestCouponController {
 
     @Autowired
     CouponService couponService;
+    @Autowired
+    CouponIssuanceService couponIssuanceService;
 
     @Test
     public void test(){
-        couponService.couponMaxCount(1L);
+        Long couponCount = couponService.couponMaxCount(1L);
         List<Thread> workers = IntStream.range(0, 200)
                 .mapToObj(index -> {
                     return new Thread(new IssuanceTest(index));
@@ -40,6 +45,8 @@ public class TestCouponController {
         @Override
         public void run() {
             System.out.println(index);
+            //index 는 userid로 하겠습니다
+            couponIssuanceService.save(new CouponIssuanceDTO(String.valueOf(index), 1L));
         }
     }
 

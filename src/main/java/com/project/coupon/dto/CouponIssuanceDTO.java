@@ -2,10 +2,7 @@ package com.project.coupon.dto;
 
 import com.project.coupon.entity.Coupon;
 import com.project.coupon.entity.CouponIssuance;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Data
 @RequiredArgsConstructor

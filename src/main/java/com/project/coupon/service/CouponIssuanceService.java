@@ -15,9 +15,16 @@ import org.springframework.stereotype.Service;
 public class CouponIssuanceService {
 
     private final CouponIssuanceRepository couponIssuanceRepository;
-
     @Transactional
     public void save(CouponIssuanceDTO couponIssuanceDTO){
+
+        int couponIssuanceCountById = couponIssuanceRepository.findByCouponId(1L).size();
+
+
+//        if(couponIssuanceCountById > 100){
+//            return;
+//        }
+        System.out.println(couponIssuanceDTO.getUserId() + " 입력");
         couponIssuanceRepository.save(CouponIssuance.translate(couponIssuanceDTO));
     }
 
