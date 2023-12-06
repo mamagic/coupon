@@ -33,6 +33,8 @@ public class TestCouponController {
                 .toList();
 
         workers.forEach(Thread::start);
+        long count = couponIssuanceService.count();
+        System.out.println("쿠폰발급 전체카운트:" + count);
     }
 
     private class IssuanceTest implements Runnable {
