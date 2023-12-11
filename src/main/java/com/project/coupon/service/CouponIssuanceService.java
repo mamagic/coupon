@@ -6,31 +6,37 @@ import com.project.coupon.entity.Coupon;
 import com.project.coupon.entity.CouponIssuance;
 import com.project.coupon.repository.CouponIssuanceRepository;
 import com.project.coupon.repository.CouponRepository;
+import jakarta.transaction.Synchronization;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
 public class CouponIssuanceService {
 
     private final CouponIssuanceRepository couponIssuanceRepository;
+    private final CouponService couponService;
+
+    private final long COUPON_ID = 1L;
+    private AtomicLong SAVE_COUNT = new AtomicLong(0L);
     @Transactional
     public void save(CouponIssuanceDTO couponIssuanceDTO){
 
-        int couponIssuanceCountById = couponIssuanceRepository.findByCouponId(1L).size();
+        long couponIssuanceCountById = count(COUPON_ID);
 
-
-        if(couponIssuanceCountById > 100){
-            return;
-        }
         System.out.println(couponIssuanceDTO.getUserId() + " 입력");
-        couponIssuanceRepository.save(CouponIssuance.translate(couponIssuanceDTO));
-    }
 
-    @Transactional
-    public long count(){
-        return couponIssuanceRepository.count();
+        //예외 처리 추가
+        if (SAVE_COUNT.incrementAndGet() <= 100) {
+            couponIssuanceRepository.save(CouponIssuance.translate(couponIssuanceDTO));
+        }
+    }
+@Transactional
+    public long count(long couponId){
+        return couponIssuanceRepository.countByCouponId(couponId);
     }
 
 }

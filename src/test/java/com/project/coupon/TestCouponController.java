@@ -33,7 +33,7 @@ public class TestCouponController {
                 .toList();
 
         workers.forEach(Thread::start);
-        long count = couponIssuanceService.count();
+        long count = couponIssuanceService.count(1L);
         System.out.println("쿠폰발급 전체카운트:" + count);
     }
 
