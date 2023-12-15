@@ -9,8 +9,12 @@ import com.project.coupon.repository.CouponRepository;
 import jakarta.transaction.Synchronization;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -19,19 +23,22 @@ public class CouponIssuanceService {
 
     private final CouponIssuanceRepository couponIssuanceRepository;
     private final CouponService couponService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
-    private final long COUPON_ID = 1L;
-    private AtomicLong SAVE_COUNT = new AtomicLong(0L);
+    private static final long COUPON_ID = 1L;
+    private static long COUPON_ISSUANCE_COUNT= 0;
+
     @Transactional
     public void save(CouponIssuanceDTO couponIssuanceDTO){
+        ListOperations<String ,String> couponIssuanceCountBycoponIds = redisTemplate.opsForList();
+        String stringCoponId = String.valueOf(COUPON_ID);
 
         long couponIssuanceCountById = count(COUPON_ID);
 
-        System.out.println(couponIssuanceDTO.getUserId() + " 입력");
-
-        //예외 처리 추가
-        if (SAVE_COUNT.incrementAndGet() <= 100) {
+        if(Long.parseLong(Objects.requireNonNull(couponIssuanceCountBycoponIds.index(stringCoponId, 0))) < couponService.couponMaxCount(COUPON_ID)){
             couponIssuanceRepository.save(CouponIssuance.translate(couponIssuanceDTO));
+            couponIssuanceCountBycoponIds.rightPush(stringCoponId, String.valueOf(COUPON_ISSUANCE_COUNT++));
         }
     }
 @Transactional
